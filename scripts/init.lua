@@ -3,10 +3,6 @@ log("Loading the skilevak mod :)")
 creatures.night_creature.troll.skilevak_voliol=function(tok)
     local lines={}
     
-	-------------------
-	-- Setup options --
-	-------------------
-	
 	local options={
         spheres={
             NIGHT=true,
@@ -17,11 +13,17 @@ creatures.night_creature.troll.skilevak_voliol=function(tok)
     }
 	options.is_male_version=one_in(2)
 	
-	--------------------
-	-- General tokens --
-	--------------------
+	skilevak_add_general_tokens(lines, options)
+	skilevak_build_body(lines, options)
+	skilevak_build_powers(lines, options)
+	skilevak_build_description(lines, options)
+	skilevak_build_name(lines, options)	
 	
-    night_creature_universals(lines,options)
+    return {raws=lines,weight=1}
+end
+
+function skilevak_add_general_tokens(lines, options)
+	night_creature_universals(lines, options)
     lines[#lines+1]="[NIGHT_CREATURE_HUNTER]"
     lines[#lines+1]="[BIOME:ANY_FOREST]"
     lines[#lines+1]="[BIOME:ANY_SHRUBLAND]"
@@ -71,11 +73,11 @@ creatures.night_creature.troll.skilevak_voliol=function(tok)
     lines[#lines+1]="[MENT_ATT_RANGE:MUSICALITY:0:333:666:1000:2333:3666:5000]"
     lines[#lines+1]="[MENT_ATT_RANGE:SOCIAL_AWARENESS:700:1300:1400:1500:1600:1800:2500]"
     --[[
-MENTAL_ATTRIBUTE_CREATIVITY,
-MENTAL_ATTRIBUTE_INTUITION,
-MENTAL_ATTRIBUTE_SPATIAL_SENSE,
-MENTAL_ATTRIBUTE_KINESTHETIC_SENSE,
-MENTAL_ATTRIBUTE_EMPATHY,
+		MENTAL_ATTRIBUTE_CREATIVITY,
+		MENTAL_ATTRIBUTE_INTUITION,
+		MENTAL_ATTRIBUTE_SPATIAL_SENSE,
+		MENTAL_ATTRIBUTE_KINESTHETIC_SENSE,
+		MENTAL_ATTRIBUTE_EMPATHY,
     ]]
     --lines[#lines+1]="[PERSONALITY:ANXIETY_PROPENSITY:0:0:0]"
     --lines[#lines+1]="[PERSONALITY:DEPRESSION_PROPENSITY:0:0:0]"
@@ -92,16 +94,8 @@ MENTAL_ATTRIBUTE_EMPATHY,
     lines[#lines+1]="[PERSONALITY:CRUELTY:100:100:100]"
     --lines[#lines+1]="[PERSONALITY:PRIDE:100:100:100]"
 
-    add_regular_tokens(lines,options)
-    populate_sphere_info(lines,options)
-    local rcp={
-        name_string="humanoid",
-		tile='H',
-		body_base="HUMANOID",
-		c_class="AMPHIBIAN", -- FOR SKIN/ORGANS AND NO HAIR/FEATHERS AT FIRST
-		min_size=1,
-        cannot_have_shell=true
-    }
+    add_regular_tokens(lines, options)
+    populate_sphere_info(lines, options)
     lines[#lines+1]="[NATURAL_SKILL:WRESTLING:6]"
     lines[#lines+1]="[NATURAL_SKILL:BITE:6]"
     lines[#lines+1]="[NATURAL_SKILL:GRASP_STRIKE:6]"
@@ -121,43 +115,47 @@ MENTAL_ATTRIBUTE_EMPATHY,
     lines[#lines+1]="[HABIT:COOK_VERMIN:50]"
     lines[#lines+1]="[HABIT:COOK_PEOPLE:50]"
     lines[#lines+1]="[HABIT:COLLECT_TROPHIES:50]"
-    lines[#lines+1]="[ODOR_STRING:"..pick_random(night_troll_smells).."]"
+    lines[#lines+1]="[ODOR_STRING:DEATH]"
     lines[#lines+1]="[ODOR_LEVEL:90]"
 	
-    local body_size=70000+trandom(8)*10000+trandom(11)*1000
+    lines[#lines+1]="[CREATURE_TILE:165]" --Ñ
+end
+
+function skilevak_build_body(lines, options)
+	lines[#lines+1]="[BODY:HUMANOID_NECK]"
+	
+	lines[#lines+1]="[BODY_DETAIL_PLAN:STANDARD_MATERIALS]"
+	lines[#lines+1]="[BODY_DETAIL_PLAN:STANDARD_TISSUES]"
+	
+	lines[#lines+1]="[TISSUE_LAYER:BY_CATEGORY:ALL:BONE]"
+	
+	local body_size=70000 + trandom(8) * 10000 + trandom(11) * 1000
     options.body_size=body_size
     lines[#lines+1]="[SELECT_CASTE:"..(options.is_male_version and "MALE" or "FEMALE").."]"
 	-- skilevaks are born as adults; the undead don't grow
     lines[#lines+1]="[BODY_SIZE:0:0:"..tostring(math.floor(body_size)).."]"
-    body_size_properties(lines,body_size)
+    body_size_properties(lines, body_size)
     local spouse_size=math.floor(body_size*(trandom(51)+50)/100)
     lines[#lines+1]="[SELECT_CASTE:"..(options.is_male_version and "FEMALE" or "MALE").."]"
     add_body_size(lines,spouse_size)
-	
     lines[#lines+1]="[SELECT_CASTE:ALL]"
-    lines[#lines+1]="[CREATURE_TILE:165]" --Ñ
-	
-	-----------------------------
-	-- Decide flavor and build --
-	-----------------------------
-	
-    options.custom_desc_func=function(options)
-        local add_tbl={}
-		
-		-- TODO
-		
-        table_merge(options.flavor_adj,add_tbl.flavor_adj)
-        return add_tbl.add
-    end
-	
-    options.flavor_adj=options.flavor_adj or {}
-    build_procgen_creature(rcp,lines,options)
+	-- TODO
+end
 
-	-----------------
-	-- Decide name --
-	-----------------
-	
-    local name_str="skilevak"
+function skilevak_build_powers(lines, options)
+	-- TODO
+end
+
+function skilevak_build_description(lines, options)
+	local desc_str="A skeletal horror wrapped in garish robes. Its legs are covered by bulbous eyes, and its skull is adorned by a live bat, covering its eye sockets like a mask. In its arms it cradles a spirit of the dead."
+	desc_str = desc_str .. end_phrase
+
+	lines[#lines+1]="[DESCRIPTION:"..desc_str.."]"
+	-- TODO
+end
+
+function skilevak_build_name(lines, options)
+	local name_str="skilevak"
     night_troll_wife_names=night_troll_wife_names or {
         {"spouse","spouses"},
         {"mate","mates"},
@@ -190,7 +188,4 @@ MENTAL_ATTRIBUTE_EMPATHY,
     lines[#lines+1]="[CASTE_NAME:"..cstr.."]"
     lines[#lines+1]="[GO_TO_START]"
     lines[#lines+1]="[NAME:"..name_str.."]"
-	
-	
-    return {raws=lines,weight=1}
 end
