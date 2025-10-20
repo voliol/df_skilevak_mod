@@ -2,7 +2,12 @@ log("Loading the skilevak mod :)")
 
 creatures.night_creature.troll.skilevak_voliol=function(tok)
     local lines={}
-    local options={
+    
+	-------------------
+	-- Setup options --
+	-------------------
+	
+	local options={
         spheres={
             NIGHT=true,
             DEATH=true
@@ -10,16 +15,13 @@ creatures.night_creature.troll.skilevak_voliol=function(tok)
         fallback_pref_str="macabre ways",
         token=tok
     }
-    options.is_male_version=one_in(2)
-    if one_in(2) then
-        options.night_creature_strength_pref=true
-    else
-        options.night_creature_agile_pref=true
-    end
+	options.is_male_version=one_in(2)
+	
+	--------------------
+	-- General tokens --
+	--------------------
+	
     night_creature_universals(lines,options)
-    -- partially I started feeling split_to_lines is ugly,
-    -- partially I want to show there's no one right way to do it
-    -- hopefully my caprice isn't too aggravating
     lines[#lines+1]="[NIGHT_CREATURE_HUNTER]"
     lines[#lines+1]="[BIOME:ANY_FOREST]"
     lines[#lines+1]="[BIOME:ANY_SHRUBLAND]"
@@ -27,6 +29,8 @@ creatures.night_creature.troll.skilevak_voliol=function(tok)
     lines[#lines+1]="[BIOME:ANY_GRASSLAND]"
     lines[#lines+1]="[BIOME:ANY_WETLAND]"
     lines[#lines+1]="[BIOME:TUNDRA]"
+	-- afaik being a spouse converter is the only way for a night troll to reproduce
+	-- so even though it's not perfect for the skilevak, it will be so
     if options.is_male_version then
         lines[#lines+1]="[CASTE:MALE]"
         lines[#lines+1]="[MALE]"
@@ -49,28 +53,13 @@ creatures.night_creature.troll.skilevak_voliol=function(tok)
     lines[#lines+1]="[SELECT_CASTE:ALL]"
 
     lines[#lines+1]="[CAN_LEARN]"
-    if one_in(2) then lines[#lines+1]="[SLOW_LEARNER]" end
     lines[#lines+1]="[CAN_SPEAK]"
     lines[#lines+1]="[SENSE_CREATURE_CLASS:GENERAL_POISON:15:4:0:1]"
-    if options.night_creature_strength_pref then
-        lines[#lines+1]="[PHYS_ATT_RANGE:STRENGTH:1000:1250:1500:2000:2250:2500:3000]"
-        lines[#lines+1]="[PHYS_ATT_RANGE:AGILITY:450:550:700:750:800:850:900]"
-        lines[#lines+1]="[PHYS_ATT_RANGE:TOUGHNESS:850:900:950:1000:1050:1100:1150]"
-        lines[#lines+1]="[PHYS_ATT_RANGE:ENDURANCE:850:900:950:1000:1050:1100:1150]"
-        options.special_walk_speed=1000
-    elseif options.night_creature_agile_pref then
-        lines[#lines+1]="[PHYS_ATT_RANGE:STRENGTH:450:550:700:750:800:850:900]"
-        lines[#lines+1]="[PHYS_ATT_RANGE:AGILITY:1000:1250:1500:2000:2250:2500:3000]"
-        lines[#lines+1]="[PHYS_ATT_RANGE:TOUGHNESS:850:900:950:1000:1050:1100:1150]"
-        lines[#lines+1]="[PHYS_ATT_RANGE:ENDURANCE:850:900:950:1000:1050:1100:1150]"
-        options.special_walk_speed=800;
-    elseif options.night_creature_strength_agile_pref then
-        lines[#lines+1]="[PHYS_ATT_RANGE:STRENGTH:1000:1150:1250:1500:2000:2250:2500]"
-        lines[#lines+1]="[PHYS_ATT_RANGE:AGILITY:1000:1150:1250:1500:2000:2250:2500]"
-        lines[#lines+1]="[PHYS_ATT_RANGE:TOUGHNESS:850:900:950:1000:1050:1100:1150]"
-        lines[#lines+1]="[PHYS_ATT_RANGE:ENDURANCE:850:900:950:1000:1050:1100:1150]"
-        options.special_walk_speed=850;
-    end
+	
+	lines[#lines+1]="[PHYS_ATT_RANGE:STRENGTH:850:900:950:1000:1050:1100:1150]"
+	lines[#lines+1]="[PHYS_ATT_RANGE:AGILITY:850:900:950:1000:1050:1100:1150]"
+	lines[#lines+1]="[PHYS_ATT_RANGE:TOUGHNESS:850:900:950:1000:1050:1100:1150]"
+	lines[#lines+1]="[PHYS_ATT_RANGE:ENDURANCE:850:900:950:1000:1050:1100:1150]"
     lines[#lines+1]="[PHYS_ATT_RANGE:RECUPERATION:450:1050:1150:1250:1350:1550:2250]"
     lines[#lines+1]="[PHYS_ATT_RANGE:DISEASE_RESISTANCE:700:1300:1400:1500:1600:1800:2500]"
     lines[#lines+1]="[MENT_ATT_RANGE:ANALYTICAL_ABILITY:1250:1500:1750:2000:2500:3000:5000]"
@@ -134,62 +123,41 @@ MENTAL_ATTRIBUTE_EMPATHY,
     lines[#lines+1]="[HABIT:COLLECT_TROPHIES:50]"
     lines[#lines+1]="[ODOR_STRING:"..pick_random(night_troll_smells).."]"
     lines[#lines+1]="[ODOR_LEVEL:90]"
+	
     local body_size=70000+trandom(8)*10000+trandom(11)*1000
     options.body_size=body_size
     lines[#lines+1]="[SELECT_CASTE:"..(options.is_male_version and "MALE" or "FEMALE").."]"
-    lines[#lines+1]="[BODY_SIZE:0:0:"..tostring(math.floor(body_size/20)).."]"
-    lines[#lines+1]="[BODY_SIZE:2:0:"..tostring(math.floor(body_size/4)).."]"
-    lines[#lines+1]="[BODY_SIZE:12:0:"..tostring(math.floor(body_size)).."]"
+	-- skilevaks are born as adults; the undead don't grow
+    lines[#lines+1]="[BODY_SIZE:0:0:"..tostring(math.floor(body_size)).."]"
     body_size_properties(lines,body_size)
     local spouse_size=math.floor(body_size*(trandom(51)+50)/100)
     lines[#lines+1]="[SELECT_CASTE:"..(options.is_male_version and "FEMALE" or "MALE").."]"
     add_body_size(lines,spouse_size)
+	
     lines[#lines+1]="[SELECT_CASTE:ALL]"
-    lines[#lines+1]="[BABY:1]"
-    lines[#lines+1]="[CHILD:18]"
     lines[#lines+1]="[CREATURE_TILE:165]" --Ñ
+	
+	-----------------------------
+	-- Decide flavor and build --
+	-----------------------------
+	
     options.custom_desc_func=function(options)
         local add_tbl={}
-        options.flavor_adj = options.flavor_adj or {}
-        if one_in(4) then
-            add_tbl=pick_random(night_troll_flavor)
-        elseif options.night_creature_strength_pref then
-            add_tbl=pick_random(night_troll_strength_flavor)
-            options.flavor_adj[#options.flavor_adj+1]="lumbering"
-            options.flavor_adj[#options.flavor_adj+1]="hulking"
-        elseif options.night_creature_agile_pref then
-            add_tbl=pick_random(night_troll_agile_flavor)
-            options.flavor_adj[#options.flavor_adj+1]="narrow"
-            options.flavor_adj[#options.flavor_adj+1]="starved"
-            options.flavor_adj[#options.flavor_adj+1]="emaciated"
-        end
+		
+		-- TODO
+		
         table_merge(options.flavor_adj,add_tbl.flavor_adj)
         return add_tbl.add
     end
+	
     options.flavor_adj=options.flavor_adj or {}
     build_procgen_creature(rcp,lines,options)
-    table_merge(options.flavor_adj,night_troll_flavor_adjs)
-    night_troll_end_phrases=night_troll_end_phrases or {
-        " of the night",
-        " of evil",
-        " of twilight",
-        " of shadow",
-    }
-    options.potential_end_phrase = options.potential_end_phrase or {}
-    table_merge(options.potential_end_phrase,night_troll_end_phrases)
-    local name_str=""
-    local used_ending=false
-    local name={}
-    if trandom(#options.flavor_adj + #options.potential_end_phrase) >= #options.flavor_adj then
-        options.eadj=pick_random(options.potential_end_phrase)
-        name=pick_random_conditional(night_troll_names,"cond",options)
-        name_str=name.name..options.eadj..":"..name.names..options.eadj..":"..name.name_adj..options.eadj
-        used_ending=true
-    else
-        options.fadj=pick_random(options.flavor_adj)
-        name=pick_random_conditional(night_troll_names,"cond",options)
-        name_str=options.fadj.." "..name.name..":"..options.fadj.." "..name.names..":"..options.fadj.." "..name.name_adj
-    end
+
+	-----------------
+	-- Decide name --
+	-----------------
+	
+    local name_str="skilevak"
     night_troll_wife_names=night_troll_wife_names or {
         {"spouse","spouses"},
         {"mate","mates"},
@@ -205,6 +173,7 @@ MENTAL_ATTRIBUTE_EMPATHY,
         {"bridegroom","bridegrooms"},
         {"groom","grooms"}
     }
+	
     local sn,sns="",""
     if options.is_male_version then
         sn,sns=table.unpack(pick_random(night_troll_wife_names))
@@ -213,19 +182,15 @@ MENTAL_ATTRIBUTE_EMPATHY,
         sn,sns=table.unpack(pick_random(night_troll_husband_names))
         lines[#lines+1]="[SELECT_CASTE:FEMALE]"
     end
-    local cstr=""
-    if used_ending then
-        cstr=name.name.." "..sn..options.eadj..":"..name.name.." "..sns..options.eadj..":"..name.name_adj.." "..sn..options.eadj
-    elseif one_in(2) then
-        cstr=options.fadj.." "..name.name.." "..sn..":"..options.fadj.." "..name.name.." "..sns..":"..options.fadj.." "..name.name.." "..sn
-    else
-        cstr=sn.." of the "..options.fadj.." "..name.name..":"..sns.." of the "..options.fadj.." "..name.name..":"..sn.." of the "..options.fadj.." "..name.name_adj
-    end
+    local cstr=options.fadj.." "..name.name.." "..sn..":"..options.fadj.." "..name.name.." "..sns..":"..options.fadj.." "..name.name.." "..sn
+	
     lines[#lines+1]="[CASTE_NAME:"..name_str.."]"
     if options.is_male_version then lines[#lines+1]="[SELECT_CASTE:FEMALE]"
     else lines[#lines+1] = "[SELECT_CASTE:MALE]" end
     lines[#lines+1]="[CASTE_NAME:"..cstr.."]"
     lines[#lines+1]="[GO_TO_START]"
     lines[#lines+1]="[NAME:"..name_str.."]"
+	
+	
     return {raws=lines,weight=1}
 end
