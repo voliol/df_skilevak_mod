@@ -147,8 +147,10 @@ function skilevak_build_powers(lines, options)
 end
 
 function skilevak_build_description(lines, options)
-	local desc_str="A skeletal horror wrapped in garish robes. Its legs are covered by bulbous eyes, and its skull is adorned by a live bat, covering its eye sockets like a mask. In its arms it cradles a spirit of the dead."
-	desc_str = desc_str .. end_phrase
+	local desc_str="A skeletal horror wrapped in garish robes. Its legs are covered by bulbous eyes, and its skull is adorned by a live bat, covering its eye sockets like a mask. In its arms it cradles a spirit of the dead. "
+	log(desc_str)
+	log(options.end_phrase)
+	desc_str = desc_str .. options.end_phrase
 
 	lines[#lines+1]="[DESCRIPTION:"..desc_str.."]"
 	-- TODO
@@ -180,7 +182,7 @@ function skilevak_build_name(lines, options)
         sn,sns=table.unpack(pick_random(night_troll_husband_names))
         lines[#lines+1]="[SELECT_CASTE:FEMALE]"
     end
-    local cstr=options.fadj.." "..name.name.." "..sn..":"..options.fadj.." "..name.name.." "..sns..":"..options.fadj.." "..name.name.." "..sn
+    local cstr=name_str.." "..sn..":"..name_str.." "..sns..":"..name_str.." "..sn
 	
     lines[#lines+1]="[CASTE_NAME:"..name_str.."]"
     if options.is_male_version then lines[#lines+1]="[SELECT_CASTE:FEMALE]"
@@ -188,4 +190,16 @@ function skilevak_build_name(lines, options)
     lines[#lines+1]="[CASTE_NAME:"..cstr.."]"
     lines[#lines+1]="[GO_TO_START]"
     lines[#lines+1]="[NAME:"..name_str.."]"
+end
+
+do_once.arena_skilevak = function()
+    lines={}
+    for i=1,6 do
+        local tok="GEN_SKILEVAK_"..i
+        lines[#lines+1]="[CREATURE:"..tok.."]"
+        add_generated_info(lines)
+        local skilevak = creatures.night_creature.troll.skilevak_voliol(tok)
+        table_merge(lines, skilevak.raws)
+    end
+    raws.register_creatures(lines)
 end
