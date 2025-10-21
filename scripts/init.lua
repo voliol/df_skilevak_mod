@@ -1,6 +1,6 @@
 log("Loading the skilevak mod :)")
 
-creatures.night_creature.troll.skilevak_voliol=function(tok)
+creatures.night_creature.troll.voliol_skilevak=function(tok)
     local lines={}
     
 	local options={
@@ -25,6 +25,7 @@ end
 function skilevak_add_general_tokens(lines, options)
 	night_creature_universals(lines, options)
     lines[#lines+1]="[NIGHT_CREATURE_HUNTER]"
+	lines[#lines+1]="[NO_THOUGHT_CENTER_FOR_MOVEMENT]"
     lines[#lines+1]="[BIOME:ANY_FOREST]"
     lines[#lines+1]="[BIOME:ANY_SHRUBLAND]"
     lines[#lines+1]="[BIOME:ANY_SAVANNA]"
@@ -122,13 +123,41 @@ function skilevak_add_general_tokens(lines, options)
     lines[#lines+1]="[COLOR:2:0:0]" --Ñ
 end
 
+
+
 function skilevak_build_body(lines, options)
-	lines[#lines+1]="[BODY:HUMANOID_NECK]"
-	
 	lines[#lines+1]="[BODY_DETAIL_PLAN:STANDARD_MATERIALS]"
 	lines[#lines+1]="[BODY_DETAIL_PLAN:STANDARD_TISSUES]"
+	lines[#lines+1]="[TISSUE:LEATHER]"
+	lines[#lines+1]="	[TISSUE_NAME:leather:leather]"
+	lines[#lines+1]="	[TISSUE_MATERIAL:LOCAL_CREATURE_MAT:LEATHER]"
+	lines[#lines+1]="	[STRUCTURAL]"
+	lines[#lines+1]="	[RELATIVE_THICKNESS:1]"
+	lines[#lines+1]="	[CONNECTS]"
+	lines[#lines+1]="	[TISSUE_SHAPE:LAYER]"
+	-- leather is a bit thicker than thread, and we want the skilevak to be a bit scary
+	lines[#lines+1]="[USE_MATERIAL_TEMPLATE:CLOTH:LEATHER_TEMPLATE]"
+	lines[#lines+1]="[SELECT_MATERIAL:CLOTH]"
+	lines[#lines+1]="	[STATE_NAME:ALL:cloth]" 
+	lines[#lines+1]="[TISSUE:CLOTH]"
+	lines[#lines+1]="	[TISSUE_NAME:cloth:cloth]"
+	lines[#lines+1]="	[TISSUE_MATERIAL:LOCAL_CREATURE_MAT:CLOTH]"
+	lines[#lines+1]="	[STRUCTURAL]"
+	lines[#lines+1]="	[RELATIVE_THICKNESS:1]"
+	lines[#lines+1]="	[CONNECTS]"
+	lines[#lines+1]="	[TISSUE_SHAPE:LAYER]"
+	lines[#lines+1]="[TISSUE:GLOVE]"
+	lines[#lines+1]="	[TISSUE_NAME:glove:glove]"
+	lines[#lines+1]="	[TISSUE_MATERIAL:LOCAL_CREATURE_MAT:CLOTH]"
+	lines[#lines+1]="	[STRUCTURAL]"
+	lines[#lines+1]="	[RELATIVE_THICKNESS:1]"
+	lines[#lines+1]="	[CONNECTS]"
+	lines[#lines+1]="	[TISSUE_SHAPE:LAYER]"
 	
-	lines[#lines+1]="[TISSUE_LAYER:BY_CATEGORY:ALL:BONE]"
+	lines[#lines+1]="[BODY:VOLIOL_SKILEVAK_BODY:5FINGERS:GENERIC_TEETH]"
+	
+	lines[#lines+1]="[BODY_DETAIL_PLAN:VOLIOL_SKILEVAK_TISSUE_LAYERS]"
+	lines[#lines+1]="[BODY_DETAIL_PLAN:VOLIOL_SKILEVAK_POSITIONS]"
 	
 	local body_size=70000 + trandom(8) * 10000 + trandom(11) * 1000
     options.body_size=body_size
@@ -144,6 +173,24 @@ function skilevak_build_body(lines, options)
 end
 
 function skilevak_build_powers(lines, options)
+
+	lines[#lines+1]="[ATTACK:BITE:CHILD_BODYPART_GROUP:BY_CATEGORY:HEAD:BY_CATEGORY:TOOTH]"
+	lines[#lines+1]="	[ATTACK_SKILL:BITE]"
+	lines[#lines+1]="	[ATTACK_VERB:bite:bites]"
+	lines[#lines+1]="	[ATTACK_CONTACT_PERC:100]"
+	lines[#lines+1]="	[ATTACK_PENETRATION_PERC:100]"
+	lines[#lines+1]="	[ATTACK_FLAG_EDGE]"
+	lines[#lines+1]="	[ATTACK_PREPARE_AND_RECOVER:3:3]"
+	lines[#lines+1]="	[ATTACK_PRIORITY:MAIN]"
+	lines[#lines+1]="	[ATTACK_FLAG_CANLATCH]"
+	lines[#lines+1]="[ATTACK:KICK:BODYPART:BY_TYPE:STANCE]"
+	lines[#lines+1]="	[ATTACK_SKILL:STANCE_STRIKE]"
+	lines[#lines+1]="	[ATTACK_VERB:kick:kicks]"
+	lines[#lines+1]="	[ATTACK_CONTACT_PERC:100]"
+	lines[#lines+1]="	[ATTACK_PREPARE_AND_RECOVER:4:4]"
+	lines[#lines+1]="	[ATTACK_FLAG_WITH]"
+	lines[#lines+1]="	[ATTACK_PRIORITY:SECOND]"
+	lines[#lines+1]="	[ATTACK_FLAG_BAD_MULTIATTACK]"
 	-- TODO
 end
 
@@ -200,7 +247,7 @@ do_once.arena_skilevak = function()
         local tok="GEN_SKILEVAK_"..i
         lines[#lines+1]="[CREATURE:"..tok.."]"
         add_generated_info(lines)
-        local skilevak = creatures.night_creature.troll.skilevak_voliol(tok)
+        local skilevak = creatures.night_creature.troll.voliol_skilevak(tok)
         table_merge(lines, skilevak.raws)
     end
     raws.register_creatures(lines)
