@@ -119,6 +119,7 @@ function skilevak_add_general_tokens(lines, options)
     lines[#lines+1]="[ODOR_LEVEL:90]"
 	
     lines[#lines+1]="[CREATURE_TILE:165]" --Ñ
+    lines[#lines+1]="[COLOR:2:0:0]" --Ñ
 end
 
 function skilevak_build_body(lines, options)
@@ -157,7 +158,7 @@ function skilevak_build_description(lines, options)
 end
 
 function skilevak_build_name(lines, options)
-	local name_str="skilevak"
+	local n,ns="skilevak","skilevaks"
     night_troll_wife_names=night_troll_wife_names or {
         {"spouse","spouses"},
         {"mate","mates"},
@@ -182,14 +183,15 @@ function skilevak_build_name(lines, options)
         sn,sns=table.unpack(pick_random(night_troll_husband_names))
         lines[#lines+1]="[SELECT_CASTE:FEMALE]"
     end
-    local cstr=name_str.." "..sn..":"..name_str.." "..sns..":"..name_str.." "..sn
+    local cstr=n.." "..sn..":"..n.." "..sns..":"..n.." "..sn
+	local nstr=n..":"..ns..":"..n
 	
-    lines[#lines+1]="[CASTE_NAME:"..name_str.."]"
+    lines[#lines+1]="[CASTE_NAME:"..nstr.."]"
     if options.is_male_version then lines[#lines+1]="[SELECT_CASTE:FEMALE]"
     else lines[#lines+1] = "[SELECT_CASTE:MALE]" end
     lines[#lines+1]="[CASTE_NAME:"..cstr.."]"
     lines[#lines+1]="[GO_TO_START]"
-    lines[#lines+1]="[NAME:"..name_str.."]"
+    lines[#lines+1]="[NAME:"..nstr.."]"
 end
 
 do_once.arena_skilevak = function()
