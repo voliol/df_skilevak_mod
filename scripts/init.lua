@@ -16,8 +16,8 @@ creatures.night_creature.troll.voliol_skilevak=function(tok)
 	skilevak_add_general_tokens(lines, options)
 	skilevak_build_body(lines, options)
 	skilevak_build_powers(lines, options)
-	skilevak_build_description(lines, options)
 	skilevak_build_name(lines, options)	
+	skilevak_build_description(lines, options)
 	
     return {raws=lines,weight=1}
 end
@@ -123,8 +123,6 @@ function skilevak_add_general_tokens(lines, options)
     lines[#lines+1]="[COLOR:2:0:0]" --Ñ
 end
 
-
-
 function skilevak_build_body(lines, options)
 	lines[#lines+1]="[BODY_DETAIL_PLAN:STANDARD_MATERIALS]"
 	lines[#lines+1]="[BODY_DETAIL_PLAN:STANDARD_TISSUES]"
@@ -172,7 +170,68 @@ function skilevak_build_body(lines, options)
 	-- TODO
 end
 
+skilevak_pow_flight = {
+	desc="bellow up its cloaks to take flight into the air",
+	add_lines=function(lines, options)
+		lines[#lines+1]="[FLIER]"
+		lines[#lines+1]="[APPLY_CREATURE_VARIATION:STANDARD_FLYING_GAITS:900:750:600:439:1900:2900] 20 kph"
+	end
+}
+
+skilevak_pow_kick1 = {
+	desc="kick 1",
+	add_lines=function(lines, options)
+		lines[#lines+1]="[ATTACK:KICK1:BODYPART:BY_TYPE:STANCE]"
+		lines[#lines+1]="	[ATTACK_SKILL:STANCE_STRIKE]"
+		lines[#lines+1]="	[ATTACK_VERB:kick 1:kicks 1]"
+		lines[#lines+1]="	[ATTACK_CONTACT_PERC:100]"
+		lines[#lines+1]="	[ATTACK_PREPARE_AND_RECOVER:4:4]"
+		lines[#lines+1]="	[ATTACK_FLAG_WITH]"
+		lines[#lines+1]="	[ATTACK_PRIORITY:SECOND]"
+		lines[#lines+1]="	[ATTACK_FLAG_BAD_MULTIATTACK]"
+	end
+}
+
+skilevak_pow_kick2 = {
+	desc="kick 2",
+	add_lines=function(lines, options)
+		lines[#lines+1]="[ATTACK:KICK2:BODYPART:BY_TYPE:STANCE]"
+		lines[#lines+1]="	[ATTACK_SKILL:STANCE_STRIKE]"
+		lines[#lines+1]="	[ATTACK_VERB:kick 2:kicks 2]"
+		lines[#lines+1]="	[ATTACK_CONTACT_PERC:100]"
+		lines[#lines+1]="	[ATTACK_PREPARE_AND_RECOVER:4:4]"
+		lines[#lines+1]="	[ATTACK_FLAG_WITH]"
+		lines[#lines+1]="	[ATTACK_PRIORITY:SECOND]"
+		lines[#lines+1]="	[ATTACK_FLAG_BAD_MULTIATTACK]"
+	end
+}
+
+skilevak_pow_kick3 = {
+	desc="kick 3",
+	add_lines=function(lines, options)
+		lines[#lines+1]="[ATTACK:KICK3:BODYPART:BY_TYPE:STANCE]"
+		lines[#lines+1]="	[ATTACK_SKILL:STANCE_STRIKE]"
+		lines[#lines+1]="	[ATTACK_VERB:kick 3:kicks 3]"
+		lines[#lines+1]="	[ATTACK_CONTACT_PERC:100]"
+		lines[#lines+1]="	[ATTACK_PREPARE_AND_RECOVER:4:4]"
+		lines[#lines+1]="	[ATTACK_FLAG_WITH]"
+		lines[#lines+1]="	[ATTACK_PRIORITY:SECOND]"
+		lines[#lines+1]="	[ATTACK_FLAG_BAD_MULTIATTACK]"
+	end
+}
+
+skilevak_pos_powers = {
+	skilevak_pow_flight,
+	skilevak_pow_kick1,
+	skilevak_pow_kick2,
+	skilevak_pow_kick3,
+}
+
+skilevak_common_power = pick_random(skilevak_pos_powers)
+
 function skilevak_build_powers(lines, options)
+
+	skilevak_common_power.add_lines(lines, options)
 
 	lines[#lines+1]="[ATTACK:BITE:CHILD_BODYPART_GROUP:BY_CATEGORY:HEAD:BY_CATEGORY:TOOTH]"
 	lines[#lines+1]="	[ATTACK_SKILL:BITE]"
@@ -194,18 +253,14 @@ function skilevak_build_powers(lines, options)
 	-- TODO
 end
 
-function skilevak_build_description(lines, options)
-	local desc_str="A skeletal horror wrapped in garish robes. Its legs are covered by bulbous eyes, and its skull is adorned by a live bat, covering its eye sockets like a mask. In its arms it cradles a spirit of the dead. "
-	log(desc_str)
-	log(options.end_phrase)
-	desc_str = desc_str .. options.end_phrase
-
-	lines[#lines+1]="[DESCRIPTION:"..desc_str.."]"
-	-- TODO
-end
-
 function skilevak_build_name(lines, options)
 	local n,ns="skilevak","skilevaks"
+	
+	local prefix = pick_random({"red", "dead", "dread", "green", "great"})
+	n = prefix .. " " .. n
+	ns = prefix .. " " .. ns
+	
+	options.n=n
     night_troll_wife_names=night_troll_wife_names or {
         {"spouse","spouses"},
         {"mate","mates"},
@@ -239,6 +294,17 @@ function skilevak_build_name(lines, options)
     lines[#lines+1]="[CASTE_NAME:"..cstr.."]"
     lines[#lines+1]="[GO_TO_START]"
     lines[#lines+1]="[NAME:"..nstr.."]"
+end
+
+function skilevak_build_description(lines, options)
+	local desc_str="A skeletal horror wrapped in garish robes. Its legs are covered by bulbous eyes, and its skull is adorned by a live bat, covering its eye sockets like a mask. In its arms it cradles a spirit of the dead. "
+	
+	desc_str= desc_str .. "Like all other skilevaks, a " .. options.n .. " can " .. skilevak_common_power.desc .. ". "
+	
+	desc_str = desc_str .. options.end_phrase
+
+	lines[#lines+1]="[DESCRIPTION:"..desc_str.."]"
+	-- TODO
 end
 
 do_once.arena_skilevak = function()
