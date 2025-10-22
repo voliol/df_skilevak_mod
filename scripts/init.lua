@@ -3,7 +3,7 @@ require "skilevak_powers"
 SKILEVAK_COMMON_POWER_NUM = 2
 SKILEVAK_UNIQUE_POWER_NUM = 1
 
-log("Loading the skilevak mod :)")
+log("Loading the skilevak mod :)") -- TODO: remove this
 
 function pop_random(t)
     if t and #t > 0 then
