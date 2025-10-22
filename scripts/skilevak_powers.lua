@@ -1,6 +1,6 @@
 
 skilevak_all_powers = {
-	flight = {
+	{
 		desc="bellow up its cloaks to take flight into the air",
 		add_lines=function(lines, options)
 			lines[#lines+1]="[FLIER]"
@@ -8,7 +8,7 @@ skilevak_all_powers = {
 		end
 	},
 
-	kick1 = {
+	{
 		desc="kick 1",
 		add_lines=function(lines, options)
 			lines[#lines+1]="[ATTACK:KICK1:BODYPART:BY_TYPE:STANCE]"
@@ -22,7 +22,7 @@ skilevak_all_powers = {
 		end
 	},
 
-	kick2 = {
+	{
 		desc="kick 2",
 		add_lines=function(lines, options)
 			lines[#lines+1]="[ATTACK:KICK2:BODYPART:BY_TYPE:STANCE]"
@@ -36,7 +36,7 @@ skilevak_all_powers = {
 		end
 	},
 
-	kick3 = {
+	{
 		desc="kick 3",
 		add_lines=function(lines, options)
 			lines[#lines+1]="[ATTACK:KICK3:BODYPART:BY_TYPE:STANCE]"
@@ -50,7 +50,7 @@ skilevak_all_powers = {
 		end
 	},
 
-	kick4 = {
+	{
 		desc="kick 4",
 		add_lines=function(lines, options)
 			lines[#lines+1]="[ATTACK:KICK4:BODYPART:BY_TYPE:STANCE]"
@@ -64,7 +64,7 @@ skilevak_all_powers = {
 		end
 	},
 
-	kick5 = {
+	{
 		desc="kick 5",
 		add_lines=function(lines, options)
 			lines[#lines+1]="[ATTACK:KICK5:BODYPART:BY_TYPE:STANCE]"
@@ -78,7 +78,7 @@ skilevak_all_powers = {
 		end
 	},
 
-	kick6 = {
+	{
 		desc="kick 6",
 		add_lines=function(lines, options)
 			lines[#lines+1]="[ATTACK:KICK6:BODYPART:BY_TYPE:STANCE]"
@@ -92,7 +92,7 @@ skilevak_all_powers = {
 		end
 	},
 
-	kick7 = {
+	{
 		desc="kick 7",
 		add_lines=function(lines, options)
 			lines[#lines+1]="[ATTACK:KICK7:BODYPART:BY_TYPE:STANCE]"
@@ -106,7 +106,7 @@ skilevak_all_powers = {
 		end
 	},
 
-	kick8 = {
+	{
 		desc="kick 8",
 		add_lines=function(lines, options)
 			lines[#lines+1]="[ATTACK:KICK8:BODYPART:BY_TYPE:STANCE]"
@@ -120,7 +120,7 @@ skilevak_all_powers = {
 		end
 	},
 
-	kick9 = {
+	{
 		desc="kick 9",
 		add_lines=function(lines, options)
 			lines[#lines+1]="[ATTACK:KICK9:BODYPART:BY_TYPE:STANCE]"

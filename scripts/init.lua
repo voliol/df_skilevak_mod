@@ -1,19 +1,19 @@
 require "skilevak_powers"
 
-SKILEVAK_COMMON_POWERS = 2
-SKILEVAK_UNIQUE_POWERS = 1
+SKILEVAK_COMMON_POWER_NUM = 2
+SKILEVAK_UNIQUE_POWER_NUM = 1
 
 log("Loading the skilevak mod :)")
 
-function pop_random(t) 
-	if t and #t > 0 then
+function pop_random(t)
+    if t and #t > 0 then
 		local i = trandom(#t)+1;
 		local choice = t[i]
 		table.remove(t, i)
-        return choice
-    else
-        return nil
-    end
+		return choice
+	else
+		return nil
+	end
 end
 
 creatures.night_creature.troll.voliol_skilevak = function(tok)
@@ -189,9 +189,9 @@ end
 preprocess.skilevak_powers = function()
 	skilevak_pos_powers = {}
 	table_merge(skilevak_pos_powers, skilevak_all_powers)
-
+	
 	skilevak_common_powers = {}
-	for i = 1, SKILEVAK_COMMON_POWERS do
+	for i = 1, SKILEVAK_COMMON_POWER_NUM do
 		table.insert(skilevak_common_powers, pop_random(skilevak_pos_powers))
 	end
 end
@@ -199,9 +199,9 @@ end
 function skilevak_build_powers(lines, options)
 
 	skilevak_unique_powers = {}
-	for i = 1, SKILEVAK_UNIQUE_POWERS do
+	for i = 1, SKILEVAK_UNIQUE_POWER_NUM do
 		table.insert(skilevak_unique_powers, pop_random(skilevak_pos_powers))
-		if #pop_random == 0
+		if #skilevak_pos_powers == 0 then
 			table_merge(skilevak_pos_powers, skilevak_all_powers)
 		end
 	end
@@ -283,18 +283,20 @@ function skilevak_build_description(lines, options)
 	desc_str = desc_str .. "Like all other skilevaks, a " .. options.n .. " can "
 	for i, power in ipairs(skilevak_common_powers) do
 		desc_str = desc_str .. power.desc
-		if i != #skilevak_common_powers
-			desc_str = desc_str .. " , and "
+		if i ~= #skilevak_common_powers then
+			desc_str = desc_str .. ", and "
 		end
 	end
+	desc_str = desc_str .. ". "
 	
 	desc_str = desc_str .. "Unlike others, it can also "
 	for i, power in ipairs(skilevak_unique_powers) do
 		desc_str = desc_str .. power.desc
-		if i != #skilevak_unique_powers
+		if i ~= #skilevak_unique_powers then
 			desc_str = desc_str .. " , and "
 		end
 	end
+	desc_str = desc_str .. ". "
 	
 	desc_str = desc_str .. options.end_phrase
 
