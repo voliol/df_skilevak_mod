@@ -186,7 +186,6 @@ function skilevak_build_body(lines, options)
     lines[#lines+1]="[SELECT_CASTE:"..(options.is_male_version and "FEMALE" or "MALE").."]"
     add_body_size(lines,spouse_size)
     lines[#lines+1]="[SELECT_CASTE:ALL]"
-	-- TODO
 end
 
 preprocess.skilevak_powers = function()
@@ -235,11 +234,31 @@ function skilevak_build_powers(lines, options)
 	lines[#lines+1]="	[ATTACK_FLAG_BAD_MULTIATTACK]"
 end
 
+-- just single-word colors that are really obviously colors
+-- TODO: use the color tokens instead, and make the cloth material the right color + add a color descriptor
+skilevak_colors = {
+	-- black
+	"black", "gray", -- dgray
+	"teal", "cerulean", "azure", "ultramarine", "blue", "periwinkle", -- blue
+	"violet", -- lblue
+	-- green
+	"chartreuse", "green" -- lgreen
+	"russet", -- cyan
+	"aquamarine", "turquoise", "lilac", -- lcyan
+	"rose", "red", "vermilion", "crimson", "carmine", -- red
+	"sepia", "brown", "tan", "scarlet", -- lred
+	"indigo", "purple", "mauve", -- magenta
+	"heliotrope", "fuchsia", "puce", "pink" -- lmagenta
+	"auburn", "ochre", "light brown", "goldenrod", -- brown
+	"orange", "yellow", -- yellow
+	-- lgray
+	"white", "beige", "lavender", -- white
+	}
+
 function skilevak_build_name(lines, options)
 	local n,ns="skilevak","skilevaks"
 	
-	-- TODO: pick from all the colors
-	local prefix = pick_random({"red", "dead", "dread", "green", "great"})
+	local prefix = pick_random(skilevak_colors)
 	n = prefix .. " " .. n
 	ns = prefix .. " " .. ns
 	
@@ -280,7 +299,7 @@ function skilevak_build_name(lines, options)
 end
 
 function skilevak_build_description(lines, options)
-	local desc_str="A skeletal horror wrapped in garish robes. Its legs are covered by bulbous eyes, and its skull is adorned by a live bat, covering its eye sockets like a mask. In its arms it cradles a spirit of the dead. "
+	local desc_str="A skeletal horror wrapped in garish cloaks. Instead of bones, its legs are made of gigantic staring eyes, and its skull is adorned by a live bat, covering its eye sockets like a mask. In its arms it cradles a spirit of the dead. "
 	
 	desc_str = desc_str .. "Like all other skilevaks, a " .. options.n .. " can "
 	for i, power in ipairs(skilevak_common_powers) do
