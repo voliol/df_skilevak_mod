@@ -1,17 +1,31 @@
 log("Loading the skilevak mod :)")
 
-creatures.night_creature.troll.voliol_skilevak=function(tok)
-    local lines={}
+SKILEVAK_COMMON_POWERS = 2
+SKILEVAK_UNIQUE_POWERS = 1
+
+function pop_random(t) 
+	if t and #t > 0 then
+		local i = trandom(#t)+1;
+		local choice = t[i]
+		table.remove(t, i)
+        return choice
+    else
+        return nil
+    end
+end
+
+creatures.night_creature.troll.voliol_skilevak = function(tok)
+    local lines = {}
     
-	local options={
-        spheres={
-            NIGHT=true,
-            DEATH=true
+	local options = {
+        spheres = {
+            NIGHT = true,
+            DEATH = true
         },
-        fallback_pref_str="macabre ways",
-        token=tok
+        fallback_pref_str = "macabre ways",
+        token = tok
     }
-	options.is_male_version=one_in(2)
+	options.is_male_version = one_in(2)
 	
 	skilevak_add_general_tokens(lines, options)
 	skilevak_build_body(lines, options)
@@ -220,18 +234,33 @@ skilevak_pow_kick3 = {
 	end
 }
 
-skilevak_pos_powers = {
-	skilevak_pow_flight,
-	skilevak_pow_kick1,
-	skilevak_pow_kick2,
-	skilevak_pow_kick3,
-}
+preprocess.skilevak_powers = function()
+	skilevak_pos_powers = {
+		skilevak_pow_flight,
+		skilevak_pow_kick1,
+		skilevak_pow_kick2,
+		skilevak_pow_kick3,
+	}
 
-skilevak_common_power = pick_random(skilevak_pos_powers)
+	skilevak_common_powers = {}
+	for i = 1, SKILEVAK_COMMON_POWERS do
+		table.insert(skilevak_common_powers, pop_random(skilevak_pos_powers))
+	end
+end
 
 function skilevak_build_powers(lines, options)
 
-	skilevak_common_power.add_lines(lines, options)
+	skilevak_unique_powers = {}
+	for i = 1, SKILEVAK_UNIQUE_POWERS do
+		table.insert(skilevak_unique_powers, pop_random(skilevak_pos_powers))
+	end
+
+	for _, power in ipairs(skilevak_common_powers) do
+		power.add_lines(lines, options)
+	end
+	for _, power in ipairs(skilevak_unique_powers) do
+		power.add_lines(lines, options)
+	end
 
 	lines[#lines+1]="[ATTACK:BITE:CHILD_BODYPART_GROUP:BY_CATEGORY:HEAD:BY_CATEGORY:TOOTH]"
 	lines[#lines+1]="	[ATTACK_SKILL:BITE]"
@@ -256,6 +285,7 @@ end
 function skilevak_build_name(lines, options)
 	local n,ns="skilevak","skilevaks"
 	
+	-- TODO: pop from all the colors
 	local prefix = pick_random({"red", "dead", "dread", "green", "great"})
 	n = prefix .. " " .. n
 	ns = prefix .. " " .. ns
@@ -299,12 +329,25 @@ end
 function skilevak_build_description(lines, options)
 	local desc_str="A skeletal horror wrapped in garish robes. Its legs are covered by bulbous eyes, and its skull is adorned by a live bat, covering its eye sockets like a mask. In its arms it cradles a spirit of the dead. "
 	
-	desc_str= desc_str .. "Like all other skilevaks, a " .. options.n .. " can " .. skilevak_common_power.desc .. ". "
+	desc_str = desc_str .. "Like all other skilevaks, a " .. options.n .. " can "
+	for i, power in ipairs(skilevak_common_powers) do
+		desc_str = desc_str .. power.desc
+		if i != #skilevak_common_powers
+			desc_str = desc_str .. " , and "
+		end
+	end
+	
+	desc_str = desc_str .. "Unlike others, it can also "
+	for i, power in ipairs(skilevak_unique_powers) do
+		desc_str = desc_str .. power.desc
+		if i != #skilevak_unique_powers
+			desc_str = desc_str .. " , and "
+		end
+	end
 	
 	desc_str = desc_str .. options.end_phrase
 
 	lines[#lines+1]="[DESCRIPTION:"..desc_str.."]"
-	-- TODO
 end
 
 do_once.arena_skilevak = function()
