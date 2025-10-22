@@ -142,6 +142,9 @@ end
 function skilevak_build_body(lines, options)
 	lines[#lines+1]="[BODY_DETAIL_PLAN:STANDARD_MATERIALS]"
 	lines[#lines+1]="[BODY_DETAIL_PLAN:STANDARD_TISSUES]"
+	lines[#lines+1]="[SELECT_MATERIAL:LEATHER]"
+	lines[#lines+1]="	[STATE_COLOR:ALL:BLACK]"
+	lines[#lines+1]="	[DISPLAY_COLOR:0:0:1]"  
 	lines[#lines+1]="[TISSUE:LEATHER]"
 	lines[#lines+1]="	[TISSUE_NAME:leather:leather]"
 	lines[#lines+1]="	[TISSUE_MATERIAL:LOCAL_CREATURE_MAT:LEATHER]"
@@ -230,13 +233,12 @@ function skilevak_build_powers(lines, options)
 	lines[#lines+1]="	[ATTACK_FLAG_WITH]"
 	lines[#lines+1]="	[ATTACK_PRIORITY:SECOND]"
 	lines[#lines+1]="	[ATTACK_FLAG_BAD_MULTIATTACK]"
-	-- TODO
 end
 
 function skilevak_build_name(lines, options)
 	local n,ns="skilevak","skilevaks"
 	
-	-- TODO: pop from all the colors
+	-- TODO: pick from all the colors
 	local prefix = pick_random({"red", "dead", "dread", "green", "great"})
 	n = prefix .. " " .. n
 	ns = prefix .. " " .. ns
