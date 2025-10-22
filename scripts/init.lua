@@ -1,7 +1,9 @@
-log("Loading the skilevak mod :)")
+require "skilevak_powers"
 
 SKILEVAK_COMMON_POWERS = 2
 SKILEVAK_UNIQUE_POWERS = 1
+
+log("Loading the skilevak mod :)")
 
 function pop_random(t) 
 	if t and #t > 0 then
@@ -184,63 +186,9 @@ function skilevak_build_body(lines, options)
 	-- TODO
 end
 
-skilevak_pow_flight = {
-	desc="bellow up its cloaks to take flight into the air",
-	add_lines=function(lines, options)
-		lines[#lines+1]="[FLIER]"
-		lines[#lines+1]="[APPLY_CREATURE_VARIATION:STANDARD_FLYING_GAITS:900:750:600:439:1900:2900] 20 kph"
-	end
-}
-
-skilevak_pow_kick1 = {
-	desc="kick 1",
-	add_lines=function(lines, options)
-		lines[#lines+1]="[ATTACK:KICK1:BODYPART:BY_TYPE:STANCE]"
-		lines[#lines+1]="	[ATTACK_SKILL:STANCE_STRIKE]"
-		lines[#lines+1]="	[ATTACK_VERB:kick 1:kicks 1]"
-		lines[#lines+1]="	[ATTACK_CONTACT_PERC:100]"
-		lines[#lines+1]="	[ATTACK_PREPARE_AND_RECOVER:4:4]"
-		lines[#lines+1]="	[ATTACK_FLAG_WITH]"
-		lines[#lines+1]="	[ATTACK_PRIORITY:SECOND]"
-		lines[#lines+1]="	[ATTACK_FLAG_BAD_MULTIATTACK]"
-	end
-}
-
-skilevak_pow_kick2 = {
-	desc="kick 2",
-	add_lines=function(lines, options)
-		lines[#lines+1]="[ATTACK:KICK2:BODYPART:BY_TYPE:STANCE]"
-		lines[#lines+1]="	[ATTACK_SKILL:STANCE_STRIKE]"
-		lines[#lines+1]="	[ATTACK_VERB:kick 2:kicks 2]"
-		lines[#lines+1]="	[ATTACK_CONTACT_PERC:100]"
-		lines[#lines+1]="	[ATTACK_PREPARE_AND_RECOVER:4:4]"
-		lines[#lines+1]="	[ATTACK_FLAG_WITH]"
-		lines[#lines+1]="	[ATTACK_PRIORITY:SECOND]"
-		lines[#lines+1]="	[ATTACK_FLAG_BAD_MULTIATTACK]"
-	end
-}
-
-skilevak_pow_kick3 = {
-	desc="kick 3",
-	add_lines=function(lines, options)
-		lines[#lines+1]="[ATTACK:KICK3:BODYPART:BY_TYPE:STANCE]"
-		lines[#lines+1]="	[ATTACK_SKILL:STANCE_STRIKE]"
-		lines[#lines+1]="	[ATTACK_VERB:kick 3:kicks 3]"
-		lines[#lines+1]="	[ATTACK_CONTACT_PERC:100]"
-		lines[#lines+1]="	[ATTACK_PREPARE_AND_RECOVER:4:4]"
-		lines[#lines+1]="	[ATTACK_FLAG_WITH]"
-		lines[#lines+1]="	[ATTACK_PRIORITY:SECOND]"
-		lines[#lines+1]="	[ATTACK_FLAG_BAD_MULTIATTACK]"
-	end
-}
-
 preprocess.skilevak_powers = function()
-	skilevak_pos_powers = {
-		skilevak_pow_flight,
-		skilevak_pow_kick1,
-		skilevak_pow_kick2,
-		skilevak_pow_kick3,
-	}
+	skilevak_pos_powers = {}
+	table_merge(skilevak_pos_powers, skilevak_all_powers)
 
 	skilevak_common_powers = {}
 	for i = 1, SKILEVAK_COMMON_POWERS do
@@ -253,6 +201,9 @@ function skilevak_build_powers(lines, options)
 	skilevak_unique_powers = {}
 	for i = 1, SKILEVAK_UNIQUE_POWERS do
 		table.insert(skilevak_unique_powers, pop_random(skilevak_pos_powers))
+		if #pop_random == 0
+			table_merge(skilevak_pos_powers, skilevak_all_powers)
+		end
 	end
 
 	for _, power in ipairs(skilevak_common_powers) do
