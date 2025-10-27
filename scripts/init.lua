@@ -3,18 +3,7 @@ require "skilevak_powers"
 SKILEVAK_COMMON_POWER_NUM = 2
 SKILEVAK_UNIQUE_POWER_NUM = 1
 
-log("Loading the skilevak mod :)") -- TODO: remove this
-
-function pop_random(t)
-    if t and #t > 0 then
-		local i = trandom(#t)+1;
-		local choice = t[i]
-		table.remove(t, i)
-		return choice
-	else
-		return nil
-	end
-end
+--log("Loading the skilevak mod :)")
 
 creatures.night_creature.troll.voliol_skilevak = function(tok)
     local lines = {}
@@ -23,10 +12,10 @@ creatures.night_creature.troll.voliol_skilevak = function(tok)
         spheres = {
             NIGHT = true,
             DEATH = true
-        },
+		},
         fallback_pref_str = "macabre ways",
         token = tok
-    }
+	}
 	options.is_male_version = one_in(2)
 	
 	skilevak_add_general_tokens(lines, options)
@@ -56,21 +45,21 @@ function skilevak_add_general_tokens(lines, options)
         lines[#lines+1]="[SPOUSE_CONVERTER]"
         lines[#lines+1]="[ORIENTATION:MALE:1:0:0]"
         lines[#lines+1]="[ORIENTATION:FEMALE:0:0:1]"
-    lines[#lines+1]="[CASTE:FEMALE]"
+		lines[#lines+1]="[CASTE:FEMALE]"
         lines[#lines+1]="[FEMALE]"
         lines[#lines+1]="[CONVERTED_SPOUSE]"
-    else
+		else
         lines[#lines+1]="[CASTE:FEMALE]"
         lines[#lines+1]="[FEMALE]"
         lines[#lines+1]="[SPOUSE_CONVERTER]"
         lines[#lines+1]="[ORIENTATION:MALE:0:0:1]"
         lines[#lines+1]="[ORIENTATION:FEMALE:1:0:0]"
-    lines[#lines+1]="[CASTE:MALE]"
+		lines[#lines+1]="[CASTE:MALE]"
         lines[#lines+1]="[MALE]"
         lines[#lines+1]="[CONVERTED_SPOUSE]"
-    end
+	end
     lines[#lines+1]="[SELECT_CASTE:ALL]"
-
+	
     lines[#lines+1]="[CAN_LEARN]"
     lines[#lines+1]="[CAN_SPEAK]"
     lines[#lines+1]="[SENSE_CREATURE_CLASS:GENERAL_POISON:15:4:0:1]"
@@ -95,7 +84,7 @@ function skilevak_add_general_tokens(lines, options)
 		MENTAL_ATTRIBUTE_SPATIAL_SENSE,
 		MENTAL_ATTRIBUTE_KINESTHETIC_SENSE,
 		MENTAL_ATTRIBUTE_EMPATHY,
-    ]]
+	]]
     --lines[#lines+1]="[PERSONALITY:ANXIETY_PROPENSITY:0:0:0]"
     --lines[#lines+1]="[PERSONALITY:DEPRESSION_PROPENSITY:0:0:0]"
     lines[#lines+1]="[PERSONALITY:BASHFUL:0:0:0]"
@@ -110,7 +99,7 @@ function skilevak_add_general_tokens(lines, options)
     --lines[#lines+1]="[PERSONALITY:SWAYED_BY_EMOTIONS:0:0:0]"
     lines[#lines+1]="[PERSONALITY:CRUELTY:100:100:100]"
     --lines[#lines+1]="[PERSONALITY:PRIDE:100:100:100]"
-
+	
     add_regular_tokens(lines, options)
     populate_sphere_info(lines, options)
     lines[#lines+1]="[NATURAL_SKILL:WRESTLING:6]"
@@ -120,7 +109,7 @@ function skilevak_add_general_tokens(lines, options)
     lines[#lines+1]="[NATURAL_SKILL:MELEE_COMBAT:6]"
     lines[#lines+1]="[NATURAL_SKILL:DODGING:6]"
     lines[#lines+1]="[NATURAL_SKILL:SITUATIONAL_AWARENESS:6]"
-
+	
     lines[#lines+1]="[DIFFICULTY:3]"
     lines[#lines+1]="[LAIR:SIMPLE_MOUND:50]"
     lines[#lines+1]="[LAIR:SIMPLE_BURROW:50]"
@@ -132,7 +121,7 @@ function skilevak_add_general_tokens(lines, options)
     lines[#lines+1]="[HABIT:COOK_VERMIN:50]"
     lines[#lines+1]="[HABIT:COOK_PEOPLE:50]"
     lines[#lines+1]="[HABIT:COLLECT_TROPHIES:50]"
-    lines[#lines+1]="[ODOR_STRING:DEATH]"
+    lines[#lines+1]="[ODOR_STRING:death]"
     lines[#lines+1]="[ODOR_LEVEL:90]"
 	
     lines[#lines+1]="[CREATURE_TILE:165]" --Ñ
@@ -154,8 +143,6 @@ function skilevak_build_body(lines, options)
 	lines[#lines+1]="	[TISSUE_SHAPE:LAYER]"
 	-- leather is a bit thicker than thread, and we want the skilevak to be a bit scary
 	lines[#lines+1]="[USE_MATERIAL_TEMPLATE:CLOTH:LEATHER_TEMPLATE]"
-	lines[#lines+1]="[SELECT_MATERIAL:CLOTH]"
-	lines[#lines+1]="	[STATE_NAME:ALL:cloth]" 
 	lines[#lines+1]="[TISSUE:CLOTH]"
 	lines[#lines+1]="	[TISSUE_NAME:cloth:cloth]"
 	lines[#lines+1]="	[TISSUE_MATERIAL:LOCAL_CREATURE_MAT:CLOTH]"
@@ -188,33 +175,43 @@ function skilevak_build_body(lines, options)
     lines[#lines+1]="[SELECT_CASTE:ALL]"
 end
 
+skilevak_common_powers = {}
+skilevak_pos_powers = {}
+skilevak_all_unique_powers = {}
+	
 preprocess.skilevak_powers = function()
-	skilevak_pos_powers = {}
 	table_merge(skilevak_pos_powers, skilevak_all_powers)
 	
-	skilevak_common_powers = {}
 	for i = 1, SKILEVAK_COMMON_POWER_NUM do
-		table.insert(skilevak_common_powers, pop_random(skilevak_pos_powers))
+		local pos_power = pick_weighted_from_table(skilevak_pos_powers)
+		remove_item(skilevak_pos_powers,pos_power)
+		
+		table.insert(skilevak_common_powers, pos_power)
 	end
+	table_merge(skilevak_all_unique_powers, skilevak_pos_powers)
 end
 
 function skilevak_build_powers(lines, options)
-
-	skilevak_unique_powers = {}
+	
+	options.skilevak_unique_powers = {}
 	for i = 1, SKILEVAK_UNIQUE_POWER_NUM do
-		table.insert(skilevak_unique_powers, pop_random(skilevak_pos_powers))
+		table.insert(options.skilevak_unique_powers, pick_random_no_replace(skilevak_pos_powers))
 		if #skilevak_pos_powers == 0 then
-			table_merge(skilevak_pos_powers, skilevak_all_powers)
+			table_merge(skilevak_pos_powers, skilevak_all_unique_powers)
 		end
 	end
-
+	
+	local interactions = {}
 	for _, power in ipairs(skilevak_common_powers) do
 		power.add_lines(lines, options)
+		table_merge(interactions,power.interaction_lines(options))
 	end
-	for _, power in ipairs(skilevak_unique_powers) do
+	for _, power in ipairs(options.skilevak_unique_powers) do
 		power.add_lines(lines, options)
+		table_merge(interactions,power.interaction_lines(options))
 	end
-
+	raws.register_interactions(interactions)
+	
 	lines[#lines+1]="[ATTACK:BITE:CHILD_BODYPART_GROUP:BY_CATEGORY:HEAD:BY_CATEGORY:TOOTH]"
 	lines[#lines+1]="	[ATTACK_SKILL:BITE]"
 	lines[#lines+1]="	[ATTACK_VERB:bite:bites]"
@@ -234,65 +231,107 @@ function skilevak_build_powers(lines, options)
 	lines[#lines+1]="	[ATTACK_FLAG_BAD_MULTIATTACK]"
 end
 
--- just single-word colors that are really obviously colors
--- TODO: use the color tokens instead, and make the cloth material the right color + add a color descriptor
-skilevak_colors = {
-	-- black
-	"black", "gray", -- dgray
-	"teal", "cerulean", "azure", "ultramarine", "blue", "periwinkle", -- blue
-	"violet", -- lblue
-	-- green
-	"chartreuse", "green" -- lgreen
-	"russet", -- cyan
-	"aquamarine", "turquoise", "lilac", -- lcyan
-	"rose", "red", "vermilion", "crimson", "carmine", -- red
-	"sepia", "brown", "tan", "scarlet", -- lred
-	"indigo", "purple", "mauve", -- magenta
-	"heliotrope", "fuchsia", "puce", "pink" -- lmagenta
-	"auburn", "ochre", "light brown", "goldenrod", -- brown
-	"orange", "yellow", -- yellow
-	-- lgray
-	"white", "beige", "lavender", -- white
-	}
+-- just single-word colors tokens that are really obviously colors
+local skilevak_colors = {
+	-- BLACK
+	"BLACK", "GRAY", -- DGRAY
+	"TEAL", "CERULEAN", "AZURE", "ULTRAMARINE", "BLUE", "PERIWINKLE", -- BLUE
+	"VIOLET", -- LBLUE
+	-- GREEN
+	"CHARTREUSE", "GREEN", -- LGREEN
+	"RUSSET", -- CYAN
+	"AQUAMARINE", "TURQUOISE", "LILAC", -- LCYAN
+	"ROSE", "RED", "VERMILION", "CRIMSON", "CARMINE", -- RED
+	"SEPIA", "BROWN", "TAN", "SCARLET", -- LRED
+	"INDIGO", "PURPLE", "MAUVE", -- MAGENTA
+	"HELIOTROPE", "FUCHSIA", "PUCE", "PINK", -- LMAGENTA
+	"AUBURN", "OCHRE", "LIGHT_BROWN", "GOLDENROD", -- BROWN
+	"ORANGE", "YELLOW", -- YELLOW
+	-- LGRAY
+	"WHITE", "BEIGE", "LAVENDER", -- WHITE
+}
 
 function skilevak_build_name(lines, options)
 	local n,ns="skilevak","skilevaks"
 	
-	local prefix = pick_random(skilevak_colors)
+	local cloth_color = pick_random(skilevak_colors)
+	local prefix = world.descriptor.color[cloth_color].name
 	n = prefix .. " " .. n
 	ns = prefix .. " " .. ns
 	
-	options.n=n
-    night_troll_wife_names=night_troll_wife_names or {
-        {"spouse","spouses"},
-        {"mate","mates"},
-        {"consort","consorts"},
-        {"wife","wives"},
-        {"bride","brides"},
-    }
-    night_troll_husband_names=night_troll_husband_names or {
-        {"spouse","spouses"},
-        {"mate","mates"},
-        {"consort","consorts"},
-        {"husband","husbands"},
-        {"bridegroom","bridegrooms"},
-        {"groom","grooms"}
-    }
+	--assign cloth colors
 	
-    local sn,sns="",""
-    if options.is_male_version then
-        sn,sns=table.unpack(pick_random(night_troll_wife_names))
-        lines[#lines+1]="[SELECT_CASTE:MALE]"
-    else
+	lines[#lines+1]="[SELECT_MATERIAL:CLOTH]"
+	lines[#lines+1]="	[STATE_NAME:ALL:cloth]"
+	lines[#lines+1]="	[STATE_COLOR:ALL:"..cloth_color.."]"
+	
+	lines[#lines+1]="[SELECT_CASTE:ALL]"
+	
+	lines[#lines+1]="[SET_TL_GROUP:BY_CATEGORY:ALL:LEATHER]"
+	lines[#lines+1]="[TL_COLOR_MODIFIER:BLACK:1]"
+	lines[#lines+1]="		[TLCM_NOUN:face bat:SINGULAR]"
+	
+	lines[#lines+1]="[SET_TL_GROUP:BY_CATEGORY:ALL:CLOTH]"
+	lines[#lines+1]="[TL_COLOR_MODIFIER:"..cloth_color..":1]"
+	lines[#lines+1]="		[TLCM_NOUN:cloak:SINGULAR]"
+	
+	local glove_color = pick_random(skilevak_colors)
+	lines[#lines+1]="[SET_TL_GROUP:BY_CATEGORY:ALL:GLOVE]"
+	lines[#lines+1]="[TL_COLOR_MODIFIER:"..glove_color..":1]"
+	lines[#lines+1]="		[TLCM_NOUN:gloves:PLURAL]"
+	
+	
+	lines[#lines+1]="[PROCEDURAL_CREATURE_GRAPHICS:DEFAULT]"
+	--lines[#lines+1]="[PCG_LAYERING:BEAST_HUMANOID_WINGS_BAT_BACK]"
+	--lines[#lines+1]="[USE_COLOR_PALETTE:"..cloth_color.."]"
+	lines[#lines+1]="[PCG_LAYERING:BEAST_HUMANOID]"
+	lines[#lines+1]="[USE_COLOR_PALETTE:IVORY]"
+	lines[#lines+1]="[PCG_LAYERING:BEAST_ORGANIC_HUMANOID]"
+	lines[#lines+1]="[USE_COLOR_PALETTE:"..glove_color.."]"
+	lines[#lines+1]="[PCG_LAYERING:BEAST_HUMANOID_EYE_TWO]"
+	lines[#lines+1]="[USE_COLOR_PALETTE:BLACK]"
+	lines[#lines+1]="[PCG_LAYERING:BEAST_ORGANIC_HUMANOID_EYE_TWO]"
+	lines[#lines+1]="[USE_COLOR_PALETTE:WHITE]"
+	lines[#lines+1]="[PCG_LAYERING:BEAST_ORGANIC_HUMANOID_HORNS]"
+	lines[#lines+1]="[USE_COLOR_PALETTE:BLACK]"
+	lines[#lines+1]="[PCG_LAYERING:BEAST_HUMANOID_DECORATION_3]"
+	lines[#lines+1]="[USE_COLOR_PALETTE:"..cloth_color.."]"
+	lines[#lines+1]="[PCG_LAYERING:BEAST_HUMANOID_DECORATION_2]"
+	lines[#lines+1]="[USE_COLOR_PALETTE:"..glove_color.."]"
+	lines[#lines+1]="[PCG_LAYERING:BEAST_HUMANOID_WINGS_BAT_FRONT]"
+	lines[#lines+1]="[USE_COLOR_PALETTE:"..cloth_color.."]"
+	
+	options.n=n
+	night_troll_wife_names=night_troll_wife_names or {
+		{"spouse","spouses"},
+		{"mate","mates"},
+		{"consort","consorts"},
+		{"wife","wives"},
+		{"bride","brides"},
+	}
+	night_troll_husband_names=night_troll_husband_names or {
+		{"spouse","spouses"},
+		{"mate","mates"},
+		{"consort","consorts"},
+		{"husband","husbands"},
+		{"bridegroom","bridegrooms"},
+		{"groom","grooms"}
+	}
+	
+	local sn,sns="",""
+	if options.is_male_version then
+		sn,sns=table.unpack(pick_random(night_troll_wife_names))
+		lines[#lines+1]="[SELECT_CASTE:MALE]"
+		else
         sn,sns=table.unpack(pick_random(night_troll_husband_names))
         lines[#lines+1]="[SELECT_CASTE:FEMALE]"
-    end
+	end
     local cstr=n.." "..sn..":"..n.." "..sns..":"..n.." "..sn
 	local nstr=n..":"..ns..":"..n
 	
     lines[#lines+1]="[CASTE_NAME:"..nstr.."]"
     if options.is_male_version then lines[#lines+1]="[SELECT_CASTE:FEMALE]"
-    else lines[#lines+1] = "[SELECT_CASTE:MALE]" end
+	else lines[#lines+1] = "[SELECT_CASTE:MALE]" end
     lines[#lines+1]="[CASTE_NAME:"..cstr.."]"
     lines[#lines+1]="[GO_TO_START]"
     lines[#lines+1]="[NAME:"..nstr.."]"
@@ -311,16 +350,16 @@ function skilevak_build_description(lines, options)
 	desc_str = desc_str .. ". "
 	
 	desc_str = desc_str .. "Unlike others, it can also "
-	for i, power in ipairs(skilevak_unique_powers) do
+	for i, power in ipairs(options.skilevak_unique_powers) do
 		desc_str = desc_str .. power.desc
-		if i ~= #skilevak_unique_powers then
+		if i ~= #options.skilevak_unique_powers then
 			desc_str = desc_str .. " , and "
 		end
 	end
 	desc_str = desc_str .. ". "
 	
 	desc_str = desc_str .. options.end_phrase
-
+	
 	lines[#lines+1]="[DESCRIPTION:"..desc_str.."]"
 end
 
@@ -332,6 +371,6 @@ do_once.arena_skilevak = function()
         add_generated_info(lines)
         local skilevak = creatures.night_creature.troll.voliol_skilevak(tok)
         table_merge(lines, skilevak.raws)
-    end
+	end
     raws.register_creatures(lines)
 end
